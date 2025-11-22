@@ -26,42 +26,58 @@
 // Mode value=8
 
 #include <stdio.h>
-void bubble(int* a,int n){
-    for(int i=0;i<n-1;i++){
-        for(int j=0;j<n-1-i;j++){
-            if(a[j]>a[j+1]){
-                int temp;temp=a[j];a[j]=a[j+1];a[j+1]=temp;
+void bubble(int *a, int n)
+{
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < n - 1 - i; j++)
+        {
+            if (a[j] > a[j + 1])
+            {
+                int temp;
+                temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
             }
         }
     }
 }
-void zhong(int* a,int n,int &mod){
-    int k=1;int max=0;
-    for(int i=1;i<n;i++){
-        if(a[i]==a[i-1]){
+void zhong(int *a, int n, int &mod)
+{
+    int k = 1;
+    int max = 0;
+    for (int i = 1; i < n; i++)
+    {
+        if (a[i] == a[i - 1])
+        {
             k++;
         }
         else
-            k=1;
-        if(k>max) 
+            k = 1;
+        if (k > max)
         {
-            max=k;mod=a[i];
+            max = k;
+            mod = a[i];
         }
     }
 }
-int main(){
+int main()
+{
     int a[41];
-    int i=0;
-    int sum=0;
-    int ave,med,mod;
-    while(scanf("%d",a+i)!=EOF){
-        sum+=a[i];
+    int i = 0;
+    int sum = 0;
+    int ave, med, mod;
+    while (scanf("%d", a + i) != EOF)
+    {
+        sum += a[i];
         i++;
     }
-    ave=sum/i;
-    bubble(a,i);
-    zhong(a,i,mod);
-    if(i&1) med=a[i/2];
-    else med=(a[i/2]+a[i/2-1])/2;
-    printf("Mean value=%d\nMedian value=%d\nMode value=%d",ave,med,mod);
+    ave = sum / i;
+    bubble(a, i);
+    zhong(a, i, mod);
+    if (i & 1)
+        med = a[i / 2];
+    else
+        med = (a[i / 2] + a[i / 2 - 1]) / 2;
+    printf("Mean value=%d\nMedian value=%d\nMode value=%d", ave, med, mod);
 }
