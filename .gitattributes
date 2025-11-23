@@ -1,0 +1,26 @@
+# 文本文件统一使用 LF 行尾符
+*.c text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# 二进制文件不进行行尾转换
+*.exe binary
+*.dll binary
+*.obj binary
+*.lib binary
+*.o binary
+
+# 明确指定 LICENSE 为文本文件
+LICENSE text eol=lf
+
+# 对代码文件设置合并策略（默认递归合并）
+*.c merge=recursive
+*.cpp merge=recursive
+*.h merge=recursive
+
+# 标记代码文件的语言类型（用于 GitHub 语法高亮）
+*.c linguist-language=C
+*.cpp linguist-language=C++
+*.h linguist-language=C++
