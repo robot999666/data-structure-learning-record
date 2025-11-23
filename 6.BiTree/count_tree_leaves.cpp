@@ -6,7 +6,7 @@ typedef  int  ElemType;
 
 typedef struct CSNode {
     ElemType data;
-    struct CSNode *firstchild, *nextsibling; // 第一个孩子、右兄弟
+    struct CSNode *firstchild, *nextsibling; 
 } CSNode, *CSTree;
 
 int Count_Leaf(CSTree T) {
