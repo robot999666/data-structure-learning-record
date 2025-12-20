@@ -1,40 +1,17 @@
-// 在调查数据分析（Survey data analysis）中经常需要计算平均数、中位数和众数。
-// 用函数编程计算40个输入数据（每个数据是取值1—10之间的任意整数）的平均数（Mean）、中位数（Median）和众数（Mode）。
-// 中位数指的是排列在数组中间的数。众数是数组中出现次数最多的那个数（不考虑两个或两个以上的输入数据出现次数相同的情况）。
-// 计算中位数时，首先要调用排序函数对数组按升序进行排序，然后取出排序后数组中间位置的元素answer[n/2] ，就得到了中位数。
-// 如果数组元素的个数是偶数，那么中位数就等于数组中间那两个元素的算术平均值。
-
-// 输入格式:
-// 输入共4行，每行中给出10个1-10之间的整数，用空格隔开。
-
-// 输出格式:
-// 输出共三行，分别按制定格式输出平均数、中位数和众数。
-
-// 输出格式是：
-// Mean value=%d\n
-// Median value=%d\n
-// Mode value=%d\n
-
-// 输入样例:
-// 10 9 10 8 7 6 5 10 9 8
-// 8 9 7 6 10 9 8 8 7 7
-// 6 6 8 8 9 9 10 8 7 7
-// 9 8 7 9 7 6 5 9 8 7
-// 输出样例:
-// Mean value=7
-// Median value=8
-// Mode value=8
-
+// 数据分析程序：计算平均数、中位数和众数
+// 输入：40个1-10之间的整数，分4行每行10个
+// 输出：平均数、中位数、众数
 #include <stdio.h>
+// 冒泡排序函数：升序排列数组
 void bubble(int *a, int n)
 {
-    for (int i = 0; i < n - 1; i++)
+    for (int i = 0; i < n - 1; i++)  // 外层循环：控制排序轮数
     {
-        for (int j = 0; j < n - 1 - i; j++)
+        for (int j = 0; j < n - 1 - i; j++)  // 内层循环：每轮比较相邻元素
         {
-            if (a[j] > a[j + 1])
+            if (a[j] > a[j + 1])  // 如果前一个元素大于后一个元素
             {
-                int temp;
+                int temp;  // 临时变量用于交换
                 temp = a[j];
                 a[j] = a[j + 1];
                 a[j + 1] = temp;
@@ -42,42 +19,53 @@ void bubble(int *a, int n)
         }
     }
 }
+// 寻找众数函数：在已排序数组中找到出现次数最多的元素
 void zhong(int *a, int n, int &mod)
 {
-    int k = 1;
-    int max = 0;
-    for (int i = 1; i < n; i++)
+    int k = 1;    // 当前元素的连续出现次数
+    int max = 0;  // 最大连续出现次数
+
+    for (int i = 1; i < n; i++)  // 从第二个元素开始遍历
     {
-        if (a[i] == a[i - 1])
+        if (a[i] == a[i - 1])  // 如果当前元素与前一个元素相同
         {
-            k++;
+            k++;  // 连续计数加1
         }
         else
-            k = 1;
-        if (k > max)
+            k = 1;  // 重置计数
+
+        if (k > max)  // 如果当前连续次数大于最大次数
         {
-            max = k;
-            mod = a[i];
+            max = k;     // 更新最大次数
+            mod = a[i];  // 更新众数
         }
     }
 }
 int main()
 {
-    int a[41];
-    int i = 0;
-    int sum = 0;
-    int ave, med, mod;
+    int a[41];     // 存储输入数据的数组
+    int i = 0;     // 数组索引和数据计数
+    int sum = 0;   // 数据总和
+    int ave, med, mod;  // 平均数、中位数、众数
+
+    // 读取所有输入数据，直到文件结束
     while (scanf("%d", a + i) != EOF)
     {
-        sum += a[i];
-        i++;
+        sum += a[i];  // 累加求和
+        i++;          // 计数器加1
     }
-    ave = sum / i;
-    bubble(a, i);
-    zhong(a, i, mod);
-    if (i & 1)
-        med = a[i / 2];
-    else
-        med = (a[i / 2] + a[i / 2 - 1]) / 2;
+
+    ave = sum / i;  // 计算平均数
+
+    bubble(a, i);   // 对数组进行冒泡排序
+    zhong(a, i, mod);  // 寻找众数
+
+    // 计算中位数
+    if (i & 1)  // 如果元素个数为奇数
+        med = a[i / 2];  // 中位数是中间的元素
+    else  // 如果元素个数为偶数
+        med = (a[i / 2] + a[i / 2 - 1]) / 2;  // 中位数是中间两个元素的平均值
+
+    // 输出结果
     printf("Mean value=%d\nMedian value=%d\nMode value=%d", ave, med, mod);
 }

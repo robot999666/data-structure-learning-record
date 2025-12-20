@@ -87,6 +87,20 @@ int main()
     return 0;
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+
+// 定义元素类型为字符
+typedef char ElemType;
+
+// 链表节点结构体
+typedef struct LNode
+{
+    ElemType data;        // 节点数据
+    struct LNode *next;   // 指向下一个节点
+} LNode, *LinkList;
+
+// 定义状态常量
 typedef int Status;
 #define TRUE 1
 #define FALSE 0
@@ -94,109 +108,120 @@ typedef int Status;
 #define ERROR 0
 #define OVERFLOW -2
 
+// 初始化链表
 Status InitList(LinkList &L)
 {
-    L = (LinkList)malloc(sizeof(LNode));
+    L = (LinkList)malloc(sizeof(LNode));  // 分配头节点内存
     if (!L)
-        return OVERFLOW;
-    L->next = NULL;
+        return OVERFLOW;  // 内存分配失败
+    L->next = NULL;       // 头节点next置空
     return OK;
 }
+
+// 获取链表长度
 int ListLength(LinkList L)
 {
-    LinkList p = L->next;
+    LinkList p = L->next;  // 从头节点下一个开始
     int len = 0;
     while (p)
     {
-        p = p->next;
-        len++;
+        p = p->next;  // 遍历节点
+        len++;        // 计数
     }
     return len;
 }
+
+// 在链表第i个位置插入元素e
 Status ListInsert(LinkList &L, int i, ElemType e)
 {
-    LinkList s = (LinkList)malloc(sizeof(LNode));
+    LinkList s = (LinkList)malloc(sizeof(LNode));  // 分配新节点
     s->data = e;
     s->next = NULL;
-    LinkList p = L;
+    LinkList p = L;  // 从头节点开始
     int j = 0;
-    while (p && j < i - 1)
+    while (p && j < i - 1)  // 找到第i-1个节点
     {
         p = p->next;
         j++;
     }
-    if (!p || j > i - 1)
+    if (!p || j > i - 1)  // 如果位置不合法
     {
-        free(s);
+        free(s);  // 释放新节点
         return ERROR;
     }
-    s->next = p->next;
+    s->next = p->next;  // 插入新节点
     p->next = s;
     return OK;
 }
+
+// 获取链表第i个元素
 Status GetElem(LinkList L, int i, ElemType &e)
 {
-    LinkList p = L->next;
+    LinkList p = L->next;  // 从第一个数据节点开始
     int j = 0;
-    while (p && j < i - 1)
+    while (p && j < i - 1)  // 遍历到第i个节点
     {
         p = p->next;
         j++;
     }
-    if (!p || j > i - 1)
+    if (!p || j > i - 1)  // 如果节点不存在
     {
         return ERROR;
     }
-    e = p->data;
+    e = p->data;  // 获取数据
     return OK;
 }
 
+// 查找元素e在链表中的位置
 int LocateElem(LinkList L, ElemType e)
 {
-    LinkList p = L->next;
-    int j = 1;
+    LinkList p = L->next;  // 从第一个数据节点开始
+    int j = 1;             // 位置从1开始
     while (p)
     {
-        if (p->data == e)
+        if (p->data == e)  // 如果找到匹配元素
         {
-            return j;
+            return j;     // 返回位置
         }
-        p = p->next;
+        p = p->next;  // 继续遍历
         j++;
     }
-    return ERROR;
+    return ERROR;  // 未找到
 }
 
+// 计算两个链表的交集，以Lb为主
 Status jiaoji(LinkList La, LinkList Lb, LinkList &Lc)
 {
-    LinkList pa = La->next;
-    LinkList pb = Lb->next;
-    InitList(Lc);
-    LinkList pc, pend = Lc;
-    while (pb)
+    LinkList pa = La->next;  // La的第一个数据节点
+    LinkList pb = Lb->next;  // Lb的第一个数据节点
+    InitList(Lc);            // 初始化结果链表Lc
+    LinkList pc, pend = Lc;  // pc为新节点，pend为Lc的尾节点
+    while (pb)               // 遍历Lb
     {
-        int w = LocateElem(La, pb->data);
-        if (w)
+        int w = LocateElem(La, pb->data);  // 检查pb->data是否在La中
+        if (w)  // 如果在La中
         {
-            pc = (LinkList)malloc(sizeof(LNode));
+            pc = (LinkList)malloc(sizeof(LNode));  // 分配新节点
             if (!pc)
                 return OVERFLOW;
             pc->next = NULL;
-            pc->data = pb->data;
-            pend->next = pc;
-            pend = pc;
+            pc->data = pb->data;  // 设置数据
+            pend->next = pc;      // 连接到尾节点
+            pend = pc;            // 更新尾节点
         }
-        pb = pb->next;
+        pb = pb->next;  // 移动到Lb下一个节点
     }
     return OK;
 }
+
+// 销毁链表，释放内存
 Status DestroyList(LinkList &L)
 {
     LinkList p = L, q;
     while (p)
     {
-        q = p->next;
-        free(p);
+        q = p->next;  // 保存下一个节点
+        free(p);      // 释放当前节点
         p = q;
     }
     return OK;

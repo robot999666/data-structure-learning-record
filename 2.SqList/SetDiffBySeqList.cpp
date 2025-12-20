@@ -52,6 +52,9 @@
 // kkkkkk
 // defg
 
+// 顺序表集合差集运算程序
+// 输入：两个集合长度及元素，计算La - Lb
+// 输出：差集元素
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -97,6 +100,7 @@ int main()
 }
 
 typedef int Status;
+// 状态宏定义
 #define TRUE 1
 #define FALSE 0
 #define OK 1
@@ -104,12 +108,14 @@ typedef int Status;
 #define OVERFLOW -2
 #define LIST_INIT_SIZE 30 // 线性表存储空间的初始分配
 #define LISTINCREMENT 10  // 线性表存储空间的分配增量
+// 顺序表结构体
 typedef struct
 {
   ElemType *elem; // 存储空间基址
   int length;     // 当前长度
   int listsize;   // 当前分配的存储容量(以sizeof(ElemType)为单位)
 } SqList;
+// 初始化顺序表
 Status InitList_Sq(SqList &L)
 {
   L.elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
@@ -120,11 +126,13 @@ Status InitList_Sq(SqList &L)
   return OK;
 } // InitList_Sq      算法2.3
 
+// 获取顺序表长度
 int ListLength_Sq(SqList L)
 {
   return L.length;
 }
 
+// 获取指定位置元素
 Status GetElem_Sq(SqList L, int i, ElemType &e)
 {
   if (i < 1 || i > L.length)
@@ -133,6 +141,7 @@ Status GetElem_Sq(SqList L, int i, ElemType &e)
   return OK;
 }
 
+// 插入元素到顺序表
 Status ListInsert_Sq(SqList &L, int i, ElemType e)
 { //  在顺序线性表L中第i个位置之前插入新的元素e,
   //  i的合法值为1≤i≤ListLength_Sq(L)+1
@@ -156,6 +165,7 @@ Status ListInsert_Sq(SqList &L, int i, ElemType e)
   return OK;
 } // ListInsert_Sq
 
+// 查找元素位置
 int LocateElem_Sq(SqList L, ElemType e, Status (*compare)(ElemType, ElemType))
 {
   int i;
@@ -170,11 +180,13 @@ int LocateElem_Sq(SqList L, ElemType e, Status (*compare)(ElemType, ElemType))
     return 0;
 } // LocateElem_Sq
 
+// 比较函数
 int equal(ElemType x, ElemType y)
 {
   return !strcmp(x, y) ? 1 : 0;
 } // 比较x与y是否相等
 
+// 删除指定位置元素
 Status ListDelete_Sq(SqList &L, int i)
 { //  i的合法值为1≤i≤ListLength_Sq(L)
   if (i < 1 || i > L.length)
@@ -188,6 +200,7 @@ Status ListDelete_Sq(SqList &L, int i)
   return OK;
 }
 
+// 计算集合差集
 void chaji_Sq(SqList La, SqList Lb, SqList &Lc)
 {
   int index;
@@ -207,6 +220,7 @@ void chaji_Sq(SqList La, SqList Lb, SqList &Lc)
   }
 }
 
+// 销毁顺序表
 Status DestroyList_Sq(SqList &L)
 {
   if (!L.elem)

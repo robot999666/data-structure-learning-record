@@ -14,14 +14,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// 定义元素类型
 typedef int ElemType;
 
+// 链表节点结构体
 typedef struct LNode
 {
-    ElemType data;
-    struct LNode *next;
+    ElemType data;        // 节点数据
+    struct LNode *next;   // 指向下一个节点
 } LNode, *LinkList;
 
+// 定义状态常量
 typedef int Status;
 #define TRUE 1
 #define FALSE 0
@@ -29,59 +32,66 @@ typedef int Status;
 #define ERROR 0
 #define OVERFLOW -2
 
+// 初始化链表
 Status InitList(LinkList &L)
 {
-    L = (LinkList)malloc(sizeof(LNode));
+    L = (LinkList)malloc(sizeof(LNode));  // 分配头节点内存
     if (!L)
-        return OVERFLOW;
-    L->next = NULL;
+        return OVERFLOW;  // 内存分配失败
+    L->next = NULL;       // 头节点next置空
     return OK;
 }
+
+// 获取链表第i个元素
 Status GetElem(LinkList L, int i, ElemType &e)
 {
-    LinkList p = L->next;
+    LinkList p = L->next;  // 从头节点下一个开始
     int j = 0;
-    while (p && j < i - 1)
+    while (p && j < i - 1)  // 遍历到第i-1个节点
     {
         p = p->next;
         j++;
     }
-    if (!p || j > i - 1)
+    if (!p || j > i - 1)  // 如果节点不存在或索引超出
     {
         return ERROR;
     }
-    e = p->data;
+    e = p->data;  // 获取数据
     return OK;
 }
+
+// 销毁链表，释放内存
 Status DestroyList(LinkList &L)
 {
     LinkList p = L, q;
     while (p)
     {
-        q = p->next;
-        free(p);
+        q = p->next;  // 保存下一个节点
+        free(p);      // 释放当前节点
         p = q;
     }
     return OK;
 }
+
+// 主函数
 int main()
 {
     LinkList L;
-    InitList(L);
+    InitList(L);  // 初始化链表
     ElemType x, y;
     int K;
-    scanf("%d", &K);
-    while (scanf("%d", &x) != -1 && x >= 0)
+    scanf("%d", &K);  // 读取K
+    while (scanf("%d", &x) != -1 && x >= 0)  // 读取序列，直到负数或EOF
     {
-        LinkList node = (LinkList)malloc(sizeof(LNode));
+        LinkList node = (LinkList)malloc(sizeof(LNode));  // 创建新节点
         node->data = x;
-        node->next = L->next;
+        node->next = L->next;  // 头插法插入
         L->next = node;
     }
-    if (GetElem(L, K, y))
+    if (GetElem(L, K, y))  // 获取倒数第K个元素
         printf("%d", y);
     else
-        printf("NULL");
-    DestroyList(L);
+        printf("NULL");  // 不存在则输出NULL
+    DestroyList(L);  // 销毁链表
     return 0;
 }

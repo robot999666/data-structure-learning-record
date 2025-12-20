@@ -15,15 +15,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// 定义元素类型
 typedef int ElemType;
 
+// 链表节点结构体，用于约瑟夫环问题
 typedef struct LNode
 {
-    ElemType num;
-    ElemType m;
-    struct LNode *next;
+    ElemType num;         // 乘客编号
+    ElemType m;           // 该乘客的报数间隔
+    struct LNode *next;   // 指向下一个节点
 } LNode, *LinkList;
 
+// 定义状态常量
 typedef int Status;
 
 #define TRUE 1
@@ -32,72 +35,74 @@ typedef int Status;
 #define ERROR 0
 #define OVERFLOW -2
 
+// 销毁链表，释放内存
 Status DestroyList(LinkList &L, int n)
 {
     LinkList p = L, q;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)  // 释放n个节点
     {
-        q = p->next;
-        free(p);
+        q = p->next;  // 保存下一个节点
+        free(p);      // 释放当前节点
         p = q;
     }
     return OK;
 }
 
+// 主函数，实现约瑟夫环问题
 int main()
 {
-    LinkList L = NULL, end, cur, pre;
-    ElemType m;
-    int n, i = 0;
-    scanf("%d", &n);
-    int N = n;
-    while (++i <= n)
+    LinkList L = NULL, end, cur, pre;  // L为头节点，end为尾节点，cur当前节点，pre前一个节点
+    ElemType m;  // 当前报数间隔
+    int n, i = 0;  // n为总人数，i为计数器
+    scanf("%d", &n);  // 读取人数
+    int N = n;  // 保存初始人数
+    while (++i <= n)  // 创建循环链表
     {
-        cur = (LinkList)malloc(sizeof(LNode));
-        scanf("%d", &m);
-        cur->num = i;
-        cur->m = m;
-        cur->next = NULL;
-        if (L == NULL)
+        cur = (LinkList)malloc(sizeof(LNode));  // 分配新节点
+        scanf("%d", &m);  // 读取该乘客的m值
+        cur->num = i;     // 设置编号
+        cur->m = m;       // 设置m值
+        cur->next = NULL; // 初始化next
+        if (L == NULL)    // 如果是第一个节点
         {
-            L = cur;
+            L = cur;     // 设置头节点
         }
         else
         {
-            end->next = cur;
+            end->next = cur;  // 连接到尾节点
         }
-        end = cur;
+        end = cur;  // 更新尾节点
     }
-    end->next = L;
-    m = L->m;
-    cur = L;
-    pre = end;
-    while (n > N / 2)
+    end->next = L;  // 形成循环链表
+    m = L->m;       // 初始报数间隔为第一个人的m
+    cur = L;        // 当前节点为头
+    pre = end;      // 前一个节点为尾
+    while (n > N / 2)  // 当人数大于一半时继续
     {
-        for (int i = 1; i < m; i++)
+        for (int i = 1; i < m; i++)  // 报数到m-1
         {
-            pre = cur;
-            cur = cur->next;
+            pre = cur;      // 更新前一个节点
+            cur = cur->next; // 移动到下一个
         }
-        m = cur->m;
-        pre->next = cur->next;
-        free(cur);
-        cur = pre->next;
-        n--;
+        m = cur->m;         // 更新报数间隔为当前被淘汰者的m
+        pre->next = cur->next;  // 从链表中移除当前节点
+        free(cur);          // 释放内存
+        cur = pre->next;    // 更新当前节点
+        n--;                // 人数减一
     }
-    L = cur;
-    for (int i = 0; i < n; i++)
+    L = cur;  // 设置新的头节点为当前节点
+    for (int i = 0; i < n; i++)  // 找到编号最小的节点作为起始点
     {
         if (cur->num < L->num)
-            L = cur;
+            L = cur;  // 更新最小编号节点
         cur = cur->next;
     }
-    cur = L;
+    cur = L;  // 从最小编号开始输出
     for (int i = 0; i < n; i++)
     {
-        printf("%3d", cur->num);
+        printf("%3d", cur->num);  // 输出编号
         cur = cur->next;
     }
-    DestroyList(L, n);
+    DestroyList(L, n);  // 销毁链表
     return 0;
 }

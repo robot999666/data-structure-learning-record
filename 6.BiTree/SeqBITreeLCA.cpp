@@ -23,30 +23,30 @@
 
 #include <stdio.h>
 
-int main()
+int main()  // 主函数
 {
-    int n;
-    scanf("%d", &n);
-    int tree[n + 1];
-    for (int i = 1; i <= n; i++)
-        scanf("%d", &tree[i]);
-    int i, j;
-    scanf("%d %d", &i, &j);
-    if (tree[i] == 0)
-        printf("ERROR: T[%d] is NULL\n", i);
-    else if (tree[j] == 0)
-        printf("ERROR: T[%d] is NULL\n", j);
-    else
+    int n;                         // 顺序存储的最大容量
+    scanf("%d", &n);               // 读取容量n
+    int tree[n + 1];               // 定义树数组（索引从1开始）
+    for (int i = 1; i <= n; i++)   // 读取树中各节点的值
+        scanf("%d", &tree[i]);     // 0表示空节点
+    int i, j;                      // 待查找的两个节点编号
+    scanf("%d %d", &i, &j);        // 读取节点编号i和j
+    if (tree[i] == 0)              // 如果节点i为空
+        printf("ERROR: T[%d] is NULL\n", i);  // 输出错误信息
+    else if (tree[j] == 0)         // 如果节点j为空
+        printf("ERROR: T[%d] is NULL\n", j);  // 输出错误信息
+    else                           // 两个节点都存在
     {
-        int a = i, b = j;
-        while (a != b)
+        int a = i, b = j;          // a和b分别跟踪i和j的祖先
+        while (a != b)             // 当a和b不相等时继续向上查找
         {
-            if (a > b)
-                a /= 2;
-            else
-                b /= 2;
+            if (a > b)             // 如果a的编号大于b
+                a /= 2;            // a向上移动到父节点（编号除以2）
+            else                   // 如果b的编号大于等于a
+                b /= 2;            // b向上移动到父节点（编号除以2）
         }
-        printf("%d %d\n", a, tree[a]);
+        printf("%d %d\n", a, tree[a]);  // 输出LCA的编号和值
     }
-    return 0;
+    return 0;                      // 返回0表示程序正常结束
 }

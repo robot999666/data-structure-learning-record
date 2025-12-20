@@ -1,25 +1,13 @@
-// 输入若干个整数，建立链表，删除其中所有值为k的结点。本题目要求用链表实现。
-
-// 输入格式:
-// 输入共二行。
-// 第一行，以数字0结束的若干非零整数作为新建链表的各节点值；
-// 第二行，一个整数k作为要删除的值。
-
-// 输出格式:
-// 删除后的链表中各节点值，没有分隔符。
-
-// 输入样例:
-// 4 2 1 3 3 2 0
-// 3
-// 输出样例:
-// 4212
-
+// 链表删除节点程序
+// 输入：若干整数（以0结束）建立链表，第二行删除值k
+// 输出：删除后链表节点值
 #include <stdio.h>
 #include <stdlib.h>
+// 链表节点结构体
 typedef struct list
 {
-    int data;
-    struct list *next;
+    int data;           // 数据
+    struct list *next;  // 下一节点
 } List;
 
 List *createlist()
@@ -50,7 +38,7 @@ List *createlist()
         }
     }
 }
-
+// 删除指定值节点
 List *deletenode(List *head, int x)
 {
     List *cur = head, *pre;
@@ -81,7 +69,7 @@ List *deletenode(List *head, int x)
     }
     return head;
 }
-
+// 打印链表
 void printlist(List *head)
 {
     List *cur = head;

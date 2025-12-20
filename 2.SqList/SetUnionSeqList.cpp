@@ -49,12 +49,16 @@
 // 输出样例
 //    3   2   5   7   4   9  21
 
+// 顺序表集合并集运算程序
+// 输入：两个集合长度及元素，计算La ∪ Lb
+// 输出：并集元素
 #include <stdio.h>
 #include <stdlib.h>
 
 typedef int ElemType;
 #define LIST_INIT_SIZE 30 // 线性表存储空间的初始分配
 #define LISTINCREMENT 10  // 线性表存储空间的分配增量
+// 顺序表结构体
 typedef struct
 {
   ElemType *elem; // 存储空间基址

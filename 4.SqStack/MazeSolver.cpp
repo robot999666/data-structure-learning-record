@@ -57,186 +57,219 @@ typedef int Status;
 #define ERROR 0
 #define OVERFLOW -2
 
-typedef int MazeType[30][30];
+typedef int MazeType[30][30];  // 迷宫类型定义，30x30的二维数组
 
 typedef struct
 {
-    int row;
-    int col;
-} PosType;
+    int row;  // 行坐标
+    int col;  // 列坐标
+} PosType;    // 位置类型，表示迷宫中的坐标
 
+// 判断两个位置是否相等
 Status equ_seat(PosType a, PosType b)
 {
     if (a.row == b.row && a.col == b.col)
-        return TRUE;
+        return TRUE;   // 位置相同
     else
-        return FALSE;
+        return FALSE;  // 位置不同
 }
 
+// 根据方向di获取当前位置的下一个位置
+// di=1:右, di=2:下, di=3:左, di=4:上
 PosType NextPos(PosType curpos, int di)
 {
     if (di == 1)
-        curpos.col++;
+        curpos.col++;  // 向右移动
     if (di == 2)
-        curpos.row++;
+        curpos.row++;  // 向下移动
     if (di == 3)
-        curpos.col--;
+        curpos.col--;  // 向左移动
     if (di == 4)
-        curpos.row--;
+        curpos.row--;  // 向上移动
     return curpos;
 }
 
 typedef struct
 {
-    int ord;
-    PosType seat;
-    int di;
-} SElemType;
+    int ord;      // 路径中的序号，表示第几步
+    PosType seat; // 当前位置
+    int di;       // 进入该位置时的方向
+} SElemType;      // 栈元素类型，记录路径信息
 
 typedef struct
 {
-    SElemType *base;
-    SElemType *top;
-    int stacksize;
-} SqStack;
+    SElemType *base;    // 栈底指针
+    SElemType *top;     // 栈顶指针
+    int stacksize;      // 栈的最大容量
+} Stack;              // 顺序栈，用于存储路径
 
-Status InitStack(SqStack &s)
+// 初始化顺序栈
+Status InitStack(Stack &s)
 {
     s.base = (SElemType *)malloc(STACK_INIT_SIZE * sizeof(SElemType));
     if (!s.base)
         exit(OVERFLOW); // 存储分配失败
-    s.top = s.base;
-    s.stacksize = STACK_INIT_SIZE;
+    s.top = s.base;    // 栈顶指针初始指向栈底，表示空栈
+    s.stacksize = STACK_INIT_SIZE;  // 设置初始栈容量
     return OK;
 }
 
-Status GetTop(SqStack s, SElemType &e)
+// 获取栈顶元素，但不弹出
+Status GetTop(Stack s, SElemType &e)
 {
-    if (s.base == s.top)
+    if (s.base == s.top)  // 栈空判断
         return ERROR;
-    e = *(s.top - 1);
+    e = *(s.top - 1);     // 获取栈顶元素
     return OK;
 }
 
-Status Push(SqStack &s, SElemType e)
-{ // 插入元素e为新的栈顶元素
-    if (s.top - s.base >= s.stacksize)
-    { // 栈满,追加存储空间
+// 入栈操作：将元素e压入栈顶
+Status Push(Stack &s, SElemType e)
+{
+    if (s.top - s.base >= s.stacksize)  // 检查栈是否已满
+    {
+        // 栈满时动态扩容
         s.base = (SElemType *)realloc(s.base, (s.stacksize + STACKINCREMENT) * sizeof(SElemType));
         if (!s.base)
             exit(OVERFLOW); // 存储分配失败
-        s.top = s.base + s.stacksize;
-        s.stacksize += STACKINCREMENT;
+        s.top = s.base + s.stacksize;  // 重新定位栈顶指针
+        s.stacksize += STACKINCREMENT; // 更新栈容量
     }
-    *s.top++ = e;
+    *s.top++ = e;  // 将元素放入栈顶并移动栈顶指针
     return OK;
 }
 
-Status Pop(SqStack &s, SElemType &e)
+// 出栈操作：弹出栈顶元素并返回其值
+Status Pop(Stack &s, SElemType &e)
 {
-    if (s.top == s.base)
+    if (s.top == s.base)  // 栈空判断
         return ERROR;
-    e = *(--s.top);
+    e = *(--s.top);       // 先移动栈顶指针，再获取元素值
     return OK;
 }
 
-Status StackEmpty(SqStack s)
+// 判断栈是否为空
+Status StackEmpty(Stack s)
 {
     if (s.top == s.base)
-        return OK;
+        return OK;   // 栈空
     else
-        return ERROR;
+        return ERROR; // 栈非空
 }
 
+// 判断当前位置是否可通过（是否为通路）
 Status Pass(MazeType maze, PosType curpos)
 {
     if (maze[curpos.row][curpos.col] == 0)
-        return TRUE;
+        return TRUE;  // 0表示通路，可以通过
     else
-        return FALSE;
+        return FALSE; // 1表示障碍，不可通过
 }
 
+// 在迷宫中留下足迹，标记当前位置为第curstep步
 void FootPrint(MazeType Maze, PosType curpos, int curstep)
 {
     Maze[curpos.row][curpos.col] = curstep;
 }
 
+// 清除迷宫中的标记，将当前位置重新设为通路
 void MarkPrint(MazeType Maze, PosType CurPos)
 {
     Maze[CurPos.row][CurPos.col] = 0;
 }
 
+// 迷宫路径寻找函数，使用栈实现深度优先搜索
+// 从start位置开始，寻找一条通往end位置的路径
 Status MazePath(MazeType maze, PosType start, PosType end)
 {
-    SqStack S;
+    Stack S;           // 路径栈，用于存储探索的路径
     InitStack(S);
-    PosType curpos = start;
-    int curstep = 1;
-    SElemType e;
+    PosType curpos = start;  // 当前位置
+    int curstep = 1;         // 当前步数
+    SElemType e;             // 栈元素
+
     do
     {
+        // 如果当前位置可通过
         if (Pass(maze, curpos))
         {
-            FootPrint(maze, curpos, curstep);
-            e = {curstep, curpos, 1};
-            Push(S, e);
-            if (equ_seat(curpos, end))
-                return TRUE;
-            curpos = NextPos(curpos, 1);
-            curstep++;
+            FootPrint(maze, curpos, curstep);  // 在迷宫中标记当前位置
+            e = {curstep, curpos, 1};          // 创建栈元素（步数、位置、方向）
+            Push(S, e);                        // 将当前位置压入栈
+
+            if (equ_seat(curpos, end))         // 如果到达终点
+                return TRUE;                   // 找到路径
+
+            curpos = NextPos(curpos, 1);       // 向右探索下一个位置
+            curstep++;                         // 步数加1
         }
         else
         {
+            // 当前位置不可通过，需要回溯
             if (!StackEmpty(S))
             {
-                Pop(S, e);
+                Pop(S, e);  // 弹出栈顶元素
+
+                // 如果该位置的4个方向都已探索完毕，继续回溯
                 while (e.di == 4 && !StackEmpty(S))
                 {
-                    MarkPrint(maze, e.seat);
-                    Pop(S, e);
+                    MarkPrint(maze, e.seat);  // 清除该位置的标记
+                    Pop(S, e);                // 继续弹出
                 }
+
+                // 如果还有未探索的方向
                 if (e.di < 4)
                 {
-                    e.di++;
-                    Push(S, e);
-                    curpos = NextPos(e.seat, e.di);
-                    curstep = e.ord + 1;
+                    e.di++;                   // 尝试下一个方向
+                    Push(S, e);               // 重新压入栈
+                    curpos = NextPos(e.seat, e.di);  // 移动到下一个方向的位置
+                    curstep = e.ord + 1;      // 更新步数
                 }
             }
         }
-    } while (!StackEmpty(S));
-    return (FALSE);
+    } while (!StackEmpty(S));  // 继续直到栈空（所有路径都探索完毕）
+
+    return FALSE;  // 未找到路径
 }
 
 int main()
 {
-    int m, n;
+    int m, n;           // m:迷宫行数, n:迷宫列数
     scanf("%d %d", &m, &n);
-    MazeType maze;
-    PosType start, end;
+
+    MazeType maze;      // 迷宫数组
+    PosType start, end; // 起点和终点位置
+
+    // 读取起点和终点坐标
     scanf("%d %d", &start.row, &start.col);
     scanf("%d %d", &end.row, &end.col);
+
+    // 初始化迷宫，边界设为障碍(1)，内部读取数据
     for (int i = 0; i <= m + 1; i++)
     {
         for (int j = 0; j <= n + 1; j++)
         {
             if (i == 0 || j == 0 || i == m + 1 || j == n + 1)
-                maze[i][j] = 1;
+                maze[i][j] = 1;  // 边界设为障碍
             else
-                scanf("%d", &maze[i][j]);
+                scanf("%d", &maze[i][j]);  // 读取迷宫内部数据
         }
     }
+
+    // 调用迷宫路径寻找函数
     if (!MazePath(maze, start, end))
-        printf("NO");
+        printf("NO");   // 未找到路径
     else
     {
+        // 找到路径，输出迷宫（显示路径）
         for (int i = 1; i <= m; i++)
         {
             for (int j = 1; j <= n; j++)
             {
+                // 清除非路径上的标记，但保留起点
                 if (maze[i][j] <= 1 && !(i == start.row && j == start.col))
                     maze[i][j] = 0;
-                printf("%3d", maze[i][j]);
+                printf("%3d", maze[i][j]);  // 格式化输出
             }
             printf("\n");
         }

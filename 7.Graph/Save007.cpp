@@ -47,59 +47,83 @@ const int MAXV = 102;
 
 typedef struct
 {
-    char vexs[MAXV][15];   
-    int arcs[MAXV][MAXV];    
-    int vexnum, arcnum;      
+    char vexs[MAXV][15];   // 顶点信息数组（本程序中未使用）
+    int arcs[MAXV][MAXV];  // 邻接矩阵，存储顶点间的连通关系（0表示无边，1表示有边）
+    int vexnum, arcnum;    // 图的顶点数和边数
 } MGraph;
 
-bool visited[MAXV];
+bool visited[MAXV];       // 访问标记数组，标记顶点是否已被访问
 
+// 深度优先搜索函数
+// 从顶点v开始进行深度优先遍历，标记所有可达的顶点
 void DFS(MGraph G, int v)
 {
-    visited[v] = true;      
+    visited[v] = true;         // 标记顶点v为已访问
+
+    // 遍历所有可能的邻接顶点
     for (int w = 0; w < G.vexnum; w++)
     {
-        if (G.arcs[v][w] !=0 && !visited[w]) 
-            DFS(G, w);                     
+        // 如果顶点w与v相邻且未被访问，则递归访问w
+        if (G.arcs[v][w] !=0 && !visited[w])
+            DFS(G, w);  // 递归调用DFS访问邻接顶点
     }
 }
 
 int main()
 {
-    int N, D;
+    int N, D;  // N:鳄鱼数量, D:007的最大跳跃距离
     scanf("%d %d", &N, &D);
-    int points[N][2];
+
+    // 读取所有鳄鱼的坐标
+    int points[N][2];  // 存储鳄鱼坐标的二维数组
     for (int i = 0; i < N; i++)
         scanf("%d %d", &points[i][0], &points[i][1]);
-    MGraph G;
-    G.vexnum = N + 2;                       //包括:起点（N）、鳄鱼（0 ~ N-1）、终点（N+1）
-    G.arcnum = 0;
-    memset(G.arcs, 0, sizeof(G.arcs));
+
+    MGraph G;  // 定义图结构
+    G.vexnum = N + 2;  // 顶点数：起点(N) + 鳄鱼(0~N-1) + 终点(N+1)
+    G.arcnum = 0;      // 边数暂时设为0
+    memset(G.arcs, 0, sizeof(G.arcs));  // 初始化邻接矩阵为0
+
+    // 构建图的边关系
     for (int i = 0; i < N; i++)
     {
+        // 计算第i只鳄鱼到起点的距离
         double dist_start = sqrt(points[i][0] * points[i][0] + points[i][1] * points[i][1]);
+        // 如果距离小于等于7.5+D（小岛半径+跳跃距离），则起点可以跳到这只鳄鱼
         if (dist_start <= 7.5 + D)
-            G.arcs[N][i] = 1;               //起点到鳄鱼
-        double dist_end = 50 - fabs(points[i][0]);
+            G.arcs[N][i] = 1;  // 起点(N)到鳄鱼(i)的边
+
+        // 计算第i只鳄鱼到终点的距离（到岸边的距离）
+        double dist_end = 50 - fabs(points[i][0]);  // 到右岸的距离
+        // 如果到右岸或上岸的距离小于等于D，则可以跳到岸边
         if (dist_end <= D || (50 - fabs(points[i][1])) <= D)
-            G.arcs[i][N + 1] = 1;           //鳄鱼到终点
+            G.arcs[i][N + 1] = 1;  // 鳄鱼(i)到终点(N+1)的边
+
+        // 计算第i只鳄鱼到其他鳄鱼的距离
         for (int j = i + 1; j < N; j++)
         {
             double dist = sqrt((points[i][0] - points[j][0]) * (points[i][0] - points[j][0]) +
                                (points[i][1] - points[j][1]) * (points[i][1] - points[j][1]));
+            // 如果两只鳄鱼间的距离小于等于D，则可以从一只跳到另一只
             if (dist <= D)
             {
-                G.arcs[i][j] = 1;
+                G.arcs[i][j] = 1;  // 双向边
                 G.arcs[j][i] = 1;
-            }                               //鳄鱼到鳄鱼
+            }
         }
     }
+    // 初始化访问标记
     for (int v = 0; v < G.vexnum; v++)
         visited[v] = false;
-    DFS(G, N);                             //从起点开始DFS
+
+    // 从起点(N)开始进行深度优先搜索
+    DFS(G, N);
+
+    // 检查是否能到达终点(N+1)
     if (visited[N + 1])
-        printf("Yes\n");
+        printf("Yes\n");  // 可以逃脱
     else
-        printf("No\n");
+        printf("No\n");   // 无法逃脱
+
     return 0;
 }

@@ -23,15 +23,18 @@
 #include <stdlib.h>
 #include <math.h>
 
+// 定义元素类型
 typedef int ElemType;
 
+// 链表节点结构体
 typedef struct LNode
 {
-    ElemType data;
-    int add;
-    int next;
+    ElemType data;  // 节点数据（键值）
+    int add;        // 节点地址
+    int next;       // 下一个节点的地址
 } LNode, *LinkList;
 
+// 定义状态常量
 typedef int Status;
 #define TRUE 1
 #define FALSE 0
@@ -39,46 +42,49 @@ typedef int Status;
 #define ERROR 0
 #define OVERFLOW -2
 
+// 主函数，实现链表去重
 int main()
 {
-    int N, head, ind, cur;
-    int p[100000];
-    int repeat[100000] = {0};
-    scanf("%d %d", &head, &N);
-    if (head == -1)
+    int N, head, ind, cur;  // N为节点总数，head为头节点地址，ind为索引，cur为当前地址
+    int p[100000];          // p数组用于地址到索引的映射
+    int repeat[100000] = {0};  // repeat数组标记绝对值是否已出现
+    scanf("%d %d", &head, &N);  // 读取头地址和节点数
+    if (head == -1)  // 如果链表为空，直接返回
     {
         return 0;
     }
-    LNode L[N], L1[N], L2[N];
-    int len1 = 0, len2 = 0;
-    for (int i = 0; i < N; i++)
+    LNode L[N], L1[N], L2[N];  // L为原始节点数组，L1为去重后链表，L2为删除链表
+    int len1 = 0, len2 = 0;    // len1为L1长度，len2为L2长度
+    for (int i = 0; i < N; i++)  // 读取所有节点信息
     {
         scanf("%d %d %d", &L[i].add, &L[i].data, &L[i].next);
-        p[L[i].add] = i;
+        p[L[i].add] = i;  // 建立地址到索引的映射
     }
-    cur = head;
+    cur = head;  // 从头节点开始遍历
     while (cur != -1)
     {
-        ind = p[cur];
-        int key = abs(L[ind].data);
+        ind = p[cur];  // 获取当前节点的索引
+        int key = abs(L[ind].data);  // 计算绝对值作为键
         int flag = 0;
-        if (repeat[key] == 0)
+        if (repeat[key] == 0)  // 如果该绝对值未出现
         {
-            repeat[key] = 1;
-            L1[len1++] = L[ind];
+            repeat[key] = 1;  // 标记为已出现
+            L1[len1++] = L[ind];  // 添加到去重链表
         }
         else
         {
-            L2[len2++] = L[ind];
+            L2[len2++] = L[ind];  // 添加到删除链表
         }
-        cur = L[ind].next;
+        cur = L[ind].next;  // 移动到下一个节点
     }
+    // 重建L1的next指针
     for (int k = 1; k < len1; k++)
     {
-        L1[k - 1].next = L1[k].add;
+        L1[k - 1].next = L1[k].add;  // 设置前一个节点的next为下一个节点的地址
     }
     if (len1 > 0)
-        L1[len1 - 1].next = -1;
+        L1[len1 - 1].next = -1;  // 最后一个节点的next设为-1
+    // 重建L2的next指针
     for (int k = 1; k < len2; k++)
     {
         L2[k - 1].next = L2[k].add;
@@ -86,14 +92,16 @@ int main()
     if (len2 > 0)
         L2[len2 - 1].next = -1;
     int k;
+    // 输出去重后的链表
     if (len1 > 0)
     {
         for (k = 0; k < len1 - 1; k++)
         {
             printf("%05d %d %05d\n", L1[k].add, L1[k].data, L1[k].next);
         }
-        printf("%05d %d %d\n", L1[k].add, L1[k].data, L1[k].next);
+        printf("%05d %d %d\n", L1[k].add, L1[k].data, L1[k].next);  // 最后一个节点
     }
+    // 输出删除的链表
     if (len2 > 0)
     {
         for (k = 0; k < len2 - 1; k++)
